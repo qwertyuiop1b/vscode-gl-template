@@ -1,18 +1,12 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#ifndef SHADER_H
+#define SHADER_H
 
-#include <iostream>
-#include <cmath>
+#include <glad/glad.h>
+
 #include <string>
 #include <fstream>
 #include <sstream>
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
-
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
-
+#include <iostream>
 
 class Shader
 {
@@ -126,103 +120,4 @@ private:
     }
   }
 };
-
-
-
-int main() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "learnopengl", NULL, NULL);
-    if (window == NULL) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    glViewport(0, 0, WIDTH, HEIGHT);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    Shader ourShader("vert.glsl", "frag.glsl");
-
-
-    float vertices[] = {
-        // 位置              // 颜色
-        0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
-        -0.5f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
-        0.0f,  -0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
-    }; 
-
-    // // create VAO VBO
-    unsigned int VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    // 获取顶点属性的最大个数
-    // int nrAttributes;
-    // glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    // std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;  
-
-   
-
-
-   
-    while (!glfwWindowShouldClose(window)) {
-        processInput(window);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        float time = glfwGetTime();
-        
-
-        ourShader.use();
-        ourShader.setFloat("uOffsetX", sin(time) * 0.1);
-        ourShader.setFloat("uOffsetY", cos(time) * 0.1);
-        ourShader.setFloat("time", time);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
-
-    glfwTerminate();
-    return 0;
-}
-
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-}
+#endif
